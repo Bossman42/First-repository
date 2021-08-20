@@ -4,6 +4,9 @@
   - subscribes to the topic "inTopic"
   - when a message is received, republishes it to "outTopic"
   This example shows how to control pins using Ethernet shield via MQTT
+
+
+  This is version 2
 */
 
 #include <SPI.h>
