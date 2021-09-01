@@ -16,7 +16,7 @@
 // Update these with values suitable for your network.
 byte mac[]    = {  0xDE, 0xED, 0xBA, 0xFE, 0xFE, 0xED };
 IPAddress ip(192, 168, 68, 185);
-IPAddress server(192, 168, 68, 105);
+IPAddress server(192, 168, 68, 103);
 
 const int lightPin = 8;
 const int button1 = 7; 
