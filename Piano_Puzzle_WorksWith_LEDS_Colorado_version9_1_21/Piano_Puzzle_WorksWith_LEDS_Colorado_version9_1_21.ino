@@ -47,7 +47,7 @@ int Key2 = 6;
 int Key3 = 2; 
 int Key4 = 5; 
 int Key5 = 7;
-int Key6 = 8;
+int Key6 = 43;
 
 unsigned int LastBPressed ;
 
@@ -272,10 +272,10 @@ void loop() {
   Key6L = Key6S;
 
 
-  if (CorrectCounter == 15 || LedCounter >= 15){
+  if ( LedCounter >= 17){
   Led6Counter = 4;}
 
-  if (Led6Counter >= 3)
+  if (Led6Counter >= 1)
   {
  Led_str = String(LedCounter); //converting Led1Counter (the float variable above) to a string 
     Led_str.toCharArray(Led, Led_str.length() + 1); //packaging up the data to publish to mqtt whoa...
@@ -318,7 +318,7 @@ void loop() {
    Led6Counter <= 3 &&
    CorrectCounter == 0){
    CorrectCounter++; 
-   client.publish("outTopic", "correct 3");
+   client.publish("outTopic", "correct 1");
 
    leds[6] = CRGB::Green;// 1st note
   //  FastLED.show();;}
@@ -365,7 +365,7 @@ if (CorrectCounter == 0){
     FastLED.show();;}
       {leds[29] = CRGB::Green;
     FastLED.show();;}}
-if (CorrectCounter == 1){
+if (CorrectCounter <= 1){
   Led6Counter = 4;
 }
     break; 
@@ -396,7 +396,7 @@ if (CorrectCounter == 1){
       {leds[46] = CRGB::Green;
     FastLED.show();;} }
 
-if (CorrectCounter == 2){
+if (CorrectCounter <= 2){
   Led6Counter = 4;
 }
    
@@ -429,7 +429,7 @@ if (CorrectCounter == 2){
     FastLED.show();;}
    }
    
-if (CorrectCounter == 3){
+if (CorrectCounter <= 3){
   Led6Counter = 4;
 }
    
@@ -461,7 +461,7 @@ if (CorrectCounter == 3){
     FastLED.show();;} }
 
 
-   if (CorrectCounter == 4){
+   if (CorrectCounter <= 4){
   Led6Counter = 4;
 }
      break;
@@ -493,7 +493,7 @@ client.publish("outTopic", "correct 6");
     FastLED.show();;}
    }
 
-if (CorrectCounter == 5){
+if (CorrectCounter <= 5){
   Led6Counter = 4;
 }
 
@@ -524,7 +524,7 @@ if (CorrectCounter == 5){
     FastLED.show();;}
       {leds[108] = CRGB::Green;
     FastLED.show();;}}
-   if (CorrectCounter == 6){
+   if (CorrectCounter <= 6){
   Led6Counter = 4;
 }
 
@@ -555,7 +555,7 @@ if (CorrectCounter == 5){
     FastLED.show();;}
       {leds[125] = CRGB::Green;
     FastLED.show();;}}
-   if (CorrectCounter == 7){
+   if (CorrectCounter <= 7){
   Led6Counter = 4;
 }
 
@@ -585,7 +585,7 @@ if (CorrectCounter == 5){
     FastLED.show();;}
       {leds[143] = CRGB::Green;
     FastLED.show();;}}
-   if (CorrectCounter == 8){
+   if (CorrectCounter <= 8){
   Led6Counter = 4;
 }
 
@@ -616,7 +616,7 @@ if (CorrectCounter == 5){
     FastLED.show();;}
       {leds[158] = CRGB::Green;
     FastLED.show();;}}
-   if (CorrectCounter == 9){
+   if (CorrectCounter <= 9){
   Led6Counter = 4;
 }
 
@@ -646,7 +646,7 @@ if (CorrectCounter == 5){
     FastLED.show();;}
       {leds[175] = CRGB::Green;
     FastLED.show();;}}
-   if (CorrectCounter == 10){
+   if (CorrectCounter <= 10){
   Led6Counter = 4;
 }
 
@@ -676,7 +676,7 @@ if (CorrectCounter == 5){
     FastLED.show();;}
       {leds[190] = CRGB::Green;
     FastLED.show();;}}
-   if (CorrectCounter == 11){
+   if (CorrectCounter <= 11){
   Led6Counter = 4;
 }
 
@@ -706,7 +706,7 @@ if (CorrectCounter == 5){
     FastLED.show();;}
       {leds[207] = CRGB::Green;
     FastLED.show();;}}
-       if (CorrectCounter == 12){
+       if (CorrectCounter <= 12){
   Led6Counter = 4;
 }
 
@@ -737,7 +737,7 @@ if (CorrectCounter == 5){
     FastLED.show();;}
       {leds[222] = CRGB::Green;
     FastLED.show();;}}
-   if (CorrectCounter == 13){
+   if (CorrectCounter <= 13){
   Led6Counter = 4;
 }
 
@@ -767,7 +767,7 @@ if (CorrectCounter == 5){
     FastLED.show();;}
       {leds[239] = CRGB::Green;
     FastLED.show();;}}
-   if (CorrectCounter == 14){
+   if (CorrectCounter <= 14){
   Led6Counter = 4;
 }
 
