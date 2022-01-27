@@ -1,18 +1,34 @@
-/*****
- 
- All the resources for this project:
- https://randomnerdtutorials.com/
- 
-*****/
-///////////////////////////Mqtt/////////////////////////////
+///////////////////////////////////   OTA Stuff ///////////////////////
 #include <ESP8266WiFi.h>
+#include <ESP8266mDNS.h>
+#include <WiFiUdp.h>
+#include <ArduinoOTA.h>
+
+#ifndef STASSID
+#define STASSID "Boss Castle"
+#define STAPSK  "whatisyourpassword"
+#endif
+
+const char* ssid = STASSID;
+const char* password = STAPSK;
+
+//////////////////////////end OTA Stuff  /////////////////////////////////////
+
+
+///////////////////////////Mqtt/////////////////////////////
+
 #include <PubSubClient.h>
 #include "DHT.h"
-/////////////////////////////////////////////////////////////
 
 
+// Change the variable to your Raspberry Pi IP address, so it connects to your MQTT broker
+const char* mqtt_server = "192.168.68.110";               /////////////////////////     change this to what ever pi is running mosquitto
+//const char* mqtt_server = "192.168.1.87";
 
+WiFiClient espClient;
+PubSubClient client(espClient);
 
+////////////////////////////end mqtt  /////////////////////////////////
 
 
 ////////////////////Neopixels/////////////////////////////////////////////////////////////////
@@ -40,9 +56,6 @@ extern const TProgmemPalette16 myRedWhiteBluePalette_p PROGMEM;
 
 /////////////////////  End Neopixels  /////////////////////////////////////////////////////////////////////////
 
-
-
-
 ///////////////////////////Rfid //////////////////////////////////////////////////////////
 
 /*
@@ -60,22 +73,6 @@ String tag;
 ///////////////////////////////////    end RFID   //////////////////////////////////////////////////////////
 
 
-// Change the credentials below, so your ESP8266 connects to your router
-const char* ssid = "Boss Castle";
-const char* password = "whatisyourpassword";
-
-//const char* ssid = "ATT5KrE5yK";
-//const char* password = "5s?u8#8r9v9h";
-
-//const char* ssid = "SUBScape-24g";
-//const char* password = "unlockthewifi";
-
-// Change the variable to your Raspberry Pi IP address, so it connects to your MQTT broker
-const char* mqtt_server = "192.168.68.110";               /////////////////////////     change this to what ever pi is running mosquitto
-//const char* mqtt_server = "192.168.1.87";
-// Initializes the espClient. You should change the espClient name if you have multiple ESPs running in your home automation system
-WiFiClient espClient;
-PubSubClient client(espClient);
 
 
 
@@ -84,23 +81,77 @@ PubSubClient client(espClient);
 long now = millis();
 long lastMeasure = 0;
 
-// Don't change the function below. This functions connects your ESP8266 to your router
-void setup_wifi() {
-  delay(10);
-  // We start by connecting to a WiFi network
-  Serial.println();
-  Serial.print("Connecting to ");
-  Serial.println(ssid);
-  WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-  Serial.println("");
-  Serial.print("WiFi connected - ESP IP address: ");
-  Serial.println(WiFi.localIP());
-  client.publish("Status","Node 3");
 
+
+void setup() {
+
+  ///////////////////////////// OTA Settings   /////////////////////////////////////
+  Serial.begin(115200);
+  Serial.println("Booting");
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(ssid, password);
+  while (WiFi.waitForConnectResult() != WL_CONNECTED) {
+    Serial.println("Connection Failed! Rebooting...");
+    delay(5000);
+    ESP.restart();
+  }
+
+  // Port defaults to 8266
+  // ArduinoOTA.setPort(8266);
+
+  // Hostname defaults to esp8266-[ChipID]
+  // ArduinoOTA.setHostname("myesp8266");
+
+  // No authentication by default
+  // ArduinoOTA.setPassword("admin");
+
+  // Password can be set with it's md5 value as well
+  // MD5(admin) = 21232f297a57a5a743894a0e4a801fc3
+  // ArduinoOTA.setPasswordHash("21232f297a57a5a743894a0e4a801fc3");
+
+  ArduinoOTA.onStart([]() {
+    String type;
+    if (ArduinoOTA.getCommand() == U_FLASH) {
+      type = "sketch";
+    } else { // U_FS
+      type = "filesystem";
+    }
+
+    // NOTE: if updating FS this would be the place to unmount FS using FS.end()
+    Serial.println("Start updating " + type);
+  });
+  ArduinoOTA.onEnd([]() {
+    Serial.println("\nEnd");
+  });
+  ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
+    Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
+  });
+  ArduinoOTA.onError([](ota_error_t error) {
+    Serial.printf("Error[%u]: ", error);
+    if (error == OTA_AUTH_ERROR) {
+      Serial.println("Auth Failed");
+    } else if (error == OTA_BEGIN_ERROR) {
+      Serial.println("Begin Failed");
+    } else if (error == OTA_CONNECT_ERROR) {
+      Serial.println("Connect Failed");
+    } else if (error == OTA_RECEIVE_ERROR) {
+      Serial.println("Receive Failed");
+    } else if (error == OTA_END_ERROR) {
+      Serial.println("End Failed");
+    }
+  });
+  ArduinoOTA.begin();
+  Serial.println("Ready");
+  Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());
+
+/////////////////////////////END OTA Settings  ///////////////////////////////////
+
+
+///////////////////////////  MQTT ///////////////////////////////////
+  client.publish("Status","Node 3");
+//////////////////////////// end MQTT ////////////////////////
+//////////////////////// NEO PIXELS  Setup  //////////////////////////
   /// This selects which pins are for controlling neopixels
 
      // tell FastLED there's 60 NEOPIXEL leds on pin 4
@@ -118,15 +169,30 @@ void setup_wifi() {
     currentPalette = RainbowColors_p;
     currentBlending = LINEARBLEND;
 
+String up_str;
+String down_str;
+
+
+
+//////////////////////// END NEOPIXELS Setup  ///////////////////////
+
+  Serial.begin(115200);
+  Serial.println ("helloworld");
+
+  client.setServer(mqtt_server, 1883);
+  client.setCallback(callback);
+
+
+
 
 
 
   
-}
+}    ///////////////////////// end Void Setup  ///////////////////////
 
-// This functions is executed when some device publishes a message to a topic that your ESP8266 is subscribed to
-// Change the function below to add logic to your program, so when a device publishes a message to a topic that 
-// your ESP8266 is subscribed you can actually do something
+
+
+
 void callback(String topic, byte* message, unsigned int length) {
   Serial.print("Message arrived on topic: ");
   Serial.print(topic);
@@ -204,6 +270,11 @@ void callback(String topic, byte* message, unsigned int length) {
   }
   Serial.println();
 
+
+
+
+  
+
     if(topic=="Connection"){
       Serial.print("Connection Status");
       if(messageTemp == "heat"){
@@ -215,6 +286,148 @@ void callback(String topic, byte* message, unsigned int length) {
   }
   Serial.println();
 
+
+
+    if(topic=="Connection"){
+      Serial.print("Connection Status");
+      if(messageTemp == "ocean"){
+   currentPalette = OceanColors_p;           currentBlending = LINEARBLEND;
+        Serial.print("Ocean");
+        client.publish("Status","Ocean");
+      }
+     
+  }
+  Serial.println();
+
+      if(topic=="Connection"){
+      Serial.print("Connection Status");
+      if(messageTemp == "rainbowstripe"){
+   currentPalette = RainbowStripeColors_p;           currentBlending = LINEARBLEND;
+        Serial.print("RainbowStripe");
+        client.publish("Status","RainbowStripe");
+      }
+     
+  }
+  Serial.println();
+
+        if(topic=="Connection"){
+      Serial.print("Connection Status");
+      if(messageTemp == "rainbowstripe2"){
+   currentPalette = RainbowStripeColors_p;           currentBlending = NOBLEND;
+        Serial.print("RainbowStripe2");
+        client.publish("Status","RainbowStripe2");
+      }
+     
+  }
+  Serial.println();
+
+
+        if(topic=="Connection"){
+      Serial.print("Connection Status");
+      if(messageTemp == "purplegreen"){
+    SetupPurpleAndGreenPalette();         currentBlending = LINEARBLEND;
+        Serial.print("purplegreen");
+        client.publish("Status","purplegreen");
+      }
+     
+  }
+  Serial.println();
+
+  
+        if(topic=="Connection"){
+      Serial.print("Connection Status");
+      if(messageTemp == "purple"){
+    SetupPurplePalette();         currentBlending = NOBLEND;
+        Serial.print("purple");
+        client.publish("Status","purple");
+      }
+     
+  }
+  Serial.println();
+
+        if(topic=="Connection"){
+      Serial.print("Connection Status");
+      if(messageTemp == "police"){
+    SetupPolicePalette();         currentBlending = NOBLEND;
+        Serial.print("police");
+        client.publish("Status","police");
+      }
+     
+  }
+  Serial.println();
+
+
+
+
+
+        if(topic=="Connection"){
+      Serial.print("Connection Status");
+      if(messageTemp == "1"){
+    UPDATES_PER_SECOND = 10;
+        Serial.print("Speed 1");
+        client.publish("Status","Speed 1");
+       
+      }
+     
+  }
+  Serial.println();
+
+        if(topic=="Connection"){
+      Serial.print("Connection Status");
+      if(messageTemp == "2"){
+    UPDATES_PER_SECOND = 40;
+        Serial.print("Speed 2");
+        client.publish("Status","Speed 2");
+      
+      }
+     
+  }
+  Serial.println();
+
+
+        if(topic=="Connection"){
+      Serial.print("Connection Status");
+      if(messageTemp == "3"){
+    UPDATES_PER_SECOND = 60;
+        Serial.print("Speed 3");
+        client.publish("Status","Speed 3");
+      
+      }
+     
+  }
+  Serial.println();
+
+          if(topic=="Connection"){
+      Serial.print("Connection Status");
+      if(messageTemp == "4"){
+    UPDATES_PER_SECOND = 80;
+        Serial.print("Speed 4");
+        client.publish("Status","Speed 4");
+      
+      }
+     
+  }
+  Serial.println();
+
+          if(topic=="Connection"){
+      Serial.print("Connection Status");
+      if(messageTemp == "5"){
+    UPDATES_PER_SECOND = 100;
+        Serial.print("Speed 5");
+        client.publish("Status","Speed 5");
+      
+      }
+     
+  }
+  Serial.println();
+
+
+
+
+
+
+
+
   
 }
 
@@ -223,6 +436,10 @@ void callback(String topic, byte* message, unsigned int length) {
 
 // This functions reconnects your ESP8266 to your MQTT broker
 // Change the function below if you want to subscribe to more topics with your ESP8266 
+
+
+
+
 void reconnect() {
   // Loop until we're reconnected
   while (!client.connected()) {
@@ -257,37 +474,14 @@ void reconnect() {
 // The setup function sets your ESP GPIOs to Outputs, starts the serial communication at a baud rate of 115200
 // Sets your mqtt broker and sets the callback function
 // The callback function is what receives messages and actually controls the LEDs
-void setup() {
-
-
-
-///////////////////////////   RFID //////////////////////////////
-  
-  /*
-  
-  SPI.begin(); // Init SPI bus
-  rfid.PCD_Init(); // Init MFRC522
-
-*/
-////////////////////////////   end RFID  ////////////////////////////////  
-
-  
-
-  
-  Serial.begin(115200);
-  Serial.println ("helloworld");
-  setup_wifi();
-  client.setServer(mqtt_server, 1883);
-  client.setCallback(callback);
 
 
 
 
-
-}
-
-// For this project, you don't need to change anything in the loop function. Basically it ensures that you ESP is connected to your broker
 void loop() {
+  ArduinoOTA.handle();
+
+
 
   if (!client.connected()) {
     reconnect();
@@ -382,7 +576,48 @@ void SetupBlackAndWhiteStripedPalette()
     
 }
 
+void SetupPurpleAndGreenPalette()
+{
+    CRGB purple = CHSV( HUE_PURPLE, 255, 255);
+    CRGB green  = CHSV( HUE_GREEN, 255, 255);
+    CRGB black  = CRGB::Black;
+    
+    currentPalette = CRGBPalette16(
+                                   green,  green,  black,  black,
+                                   purple, purple, black,  black,
+                                   green,  green,  black,  black,
+                                   purple, purple, black,  black );
+}
+void SetupPurplePalette()
+{
+    CRGB purple = CHSV( HUE_PURPLE, 255, 255);
+    CRGB green  = CHSV( HUE_GREEN, 255, 255);
+    CRGB black  = CRGB::Black;
+    
+    currentPalette = CRGBPalette16(
+                                   purple, purple, black,  black,
+                                   purple, purple, black,  black,
+                                   purple, purple, black,  black,
+                                   purple, purple, black,  black );
+}
+
+
+void SetupPolicePalette()
+{
+    CRGB red = CHSV( HUE_RED, 255, 255);
+    CRGB blue  = CHSV( HUE_BLUE, 255, 255);
+    CRGB black  = CRGB::Black;
+    
+    currentPalette = CRGBPalette16(
+                                   red, black, blue,  black,
+                                   black, black, black,  black,
+                                   red, black, blue,  black,
+                                   black, black, black,  black );
+}
+
+
+
+
 
 
   
- 
