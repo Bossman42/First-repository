@@ -5,8 +5,8 @@
 #include <ArduinoOTA.h>
 
 #ifndef STASSID
-#define STASSID "Boss Castle"
-#define STAPSK  "whatisyourpassword"
+#define STASSID "SUBScape-24g"
+#define STAPSK  "unlockthewifi"
 #endif
 
 const char* ssid = STASSID;
@@ -35,7 +35,7 @@ int newbuttonpress = 0;
 
 
 // Change the variable to your Raspberry Pi IP address, so it connects to your MQTT broker
-const char* mqtt_server = "192.168.68.110";               /////////////////////////     change this to what ever pi is running mosquitto
+const char* mqtt_server = "192.168.1.14";               /////////////////////////     change this to what ever pi is running mosquitto
 //const char* mqtt_server = "192.168.1.87";
 
 WiFiClient espClient;
