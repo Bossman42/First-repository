@@ -17,7 +17,7 @@ const char* password = STAPSK;
 ////////////////////////////  Physical Button  ///////////////////////////////
 
 int button1 = 14;
-int button2 = 12;
+//int button2 = 12;
 
 int button1L = 1;
 int button2L = 1;
@@ -52,7 +52,7 @@ int UPDATES_PER_SECOND = 100;
 //#define FASTLED_ALLOW_INTERRUPTS 0
 
 
-#define NUM_LEDS_PER_STRIP 103
+#define NUM_LEDS_PER_STRIP 300
 CRGB redLeds[NUM_LEDS_PER_STRIP];
 CRGB greenLeds[NUM_LEDS_PER_STRIP];
 CRGB blueLeds[NUM_LEDS_PER_STRIP];
@@ -100,7 +100,7 @@ void setup() {
 /////////////////////////////////////// Physical Buttons  //////////////////////
 //
   pinMode(button1, INPUT_PULLUP);//button 1
-  pinMode(button2, INPUT_PULLUP);//button 2
+//  pinMode(button2, INPUT_PULLUP);//button 2
 
 ///////////////////////////////////End Physical Buttons ////////////////////////
 
@@ -177,13 +177,13 @@ void setup() {
   /// This selects which pins are for controlling neopixels
 
      // tell FastLED there's 60 NEOPIXEL leds on pin 4
-  FastLED.addLeds<NEOPIXEL, 8>(redLeds, NUM_LEDS_PER_STRIP);          /////////////////////////  Define pin on ESP8266   ////////////////////////////
+  FastLED.addLeds<NEOPIXEL, 7>(redLeds, NUM_LEDS_PER_STRIP);          /////////////////////////  Define pin on ESP8266   ////////////////////////////
                                                                       ////////////////////////   this is for 3 strips   /////////////////////////////
   // tell FastLED there's 60 NEOPIXEL leds on pin 5
-  FastLED.addLeds<NEOPIXEL, 1>(greenLeds, NUM_LEDS_PER_STRIP);
+  FastLED.addLeds<NEOPIXEL, 8>(greenLeds, NUM_LEDS_PER_STRIP);
 
   // tell FastLED there's 60 NEOPIXEL leds on pin 12
-  FastLED.addLeds<NEOPIXEL, 2>(blueLeds, NUM_LEDS_PER_STRIP);
+ // FastLED.addLeds<NEOPIXEL, 2>(blueLeds, NUM_LEDS_PER_STRIP);
     
  //   FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
 //    FastLED.setBrightness(  BRIGHTNESS );
@@ -245,7 +245,7 @@ void callback(String topic, byte* message, unsigned int length) {
       if(messageTemp == "cloud"){
       currentPalette = CloudColors_p;           currentBlending = LINEARBLEND; 
         Serial.print("cloud");
-        client.publish("Status","cloud selected");
+        client.publish("Status","Clouds");
       }
      
   }
@@ -257,7 +257,7 @@ void callback(String topic, byte* message, unsigned int length) {
       if(messageTemp == "party"){
    currentPalette = PartyColors_p;           currentBlending = LINEARBLEND;
         Serial.print("cloud");
-        client.publish("Status","party selected");
+        client.publish("Status","Y2k");
       }
      
   }
@@ -272,7 +272,7 @@ void callback(String topic, byte* message, unsigned int length) {
       if(messageTemp == "lava"){
    currentPalette = LavaColors_p;           currentBlending = LINEARBLEND;
         Serial.print("lava");
-        client.publish("Status","Lava Colors");
+        client.publish("Status","Lava");
       }
      
   }
@@ -326,7 +326,7 @@ void callback(String topic, byte* message, unsigned int length) {
       if(messageTemp == "rainbowstripe"){
    currentPalette = RainbowStripeColors_p;           currentBlending = LINEARBLEND;
         Serial.print("RainbowStripe");
-        client.publish("Status","RainbowStripe");
+        client.publish("Status","Rainbow");
       }
      
   }
@@ -337,7 +337,7 @@ void callback(String topic, byte* message, unsigned int length) {
       if(messageTemp == "rainbowstripe2"){
    currentPalette = RainbowStripeColors_p;           currentBlending = NOBLEND;
         Serial.print("RainbowStripe2");
-        client.publish("Status","RainbowStripe2");
+        client.publish("Status","Rainbow Stripe");
       }
      
   }
@@ -349,7 +349,7 @@ void callback(String topic, byte* message, unsigned int length) {
       if(messageTemp == "purplegreen"){
     SetupPurpleAndGreenPalette();         currentBlending = LINEARBLEND;
         Serial.print("purplegreen");
-        client.publish("Status","purplegreen");
+        client.publish("Status","Thanos");
       }
      
   }
@@ -361,7 +361,7 @@ void callback(String topic, byte* message, unsigned int length) {
       if(messageTemp == "purple"){
     SetupPurplePalette();         currentBlending = NOBLEND;
         Serial.print("purple");
-        client.publish("Status","purple");
+        client.publish("Status","Oracle");
       }
      
   }
@@ -372,7 +372,7 @@ void callback(String topic, byte* message, unsigned int length) {
       if(messageTemp == "police"){
     SetupPolicePalette();         currentBlending = NOBLEND;
         Serial.print("police");
-        client.publish("Status","police");
+        client.publish("Status","Exit Protocol");
       }
      
   }
@@ -505,18 +505,12 @@ void loop() {
 
 
 
-  if (!client.connected()) {
-    reconnect();
-  }
-  if(!client.loop())
-    client.connect("ESP8266Client");
-
-  now = millis();
+ 
 
 /////////////////////////////// Physical Buttons /////////////////////////////
 
   int button1S = digitalRead(button1);
-  int button2S = digitalRead(button2);
+ // int button2S = digitalRead(button2);
 
   if (button1S != button1L) 
   {if (button1S == LOW)
@@ -655,8 +649,20 @@ void loop() {
   
   
   */
-////////////////////////////////////////////////////////RFID  //////////////////////////////////////////////
+////////////////////////////////////////////////////////  End RFID  //////////////////////////////////////////////
 
+
+/////////////////////////////////////////////////////  Mqtt Reconnect   //////////////////////////////////////////////////////
+
+ if (!client.connected()) {
+    reconnect();
+  }
+  if(!client.loop())
+    client.connect("ESP8266Client");
+
+  now = millis();
+
+  /////////////////////////////////////////////  End Mqtt Reconnect  ///////////////////////////////////////////
 
   }          //////////////////////////////     end of void loop     //////////////////////////////////////
 
