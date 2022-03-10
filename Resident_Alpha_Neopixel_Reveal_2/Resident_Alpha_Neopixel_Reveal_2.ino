@@ -9,30 +9,41 @@
   This is version 2
 */
 
-#include <SPI.h>
-#include <Ethernet.h>
-#include <PubSubClient.h>
+
 
 #include <Adafruit_NeoPixel.h>
-#define NUMPIXELS 100  
-#define NUMPIXELS2 150  
-#define NUMPIXELS3 150  
-#define NUMPIXELS4 150  
-#define NUMPIXELS5 150  
-#define NUMPIXELS6 150  
+#define NUMPIXELS 300  
+#define NUMPIXELS2 300  
+#define NUMPIXELS3 300  
+#define NUMPIXELS4 300  
+#define NUMPIXELS5 150 
+#define NUMPIXELS6 300  
 
-#define PIN        31
-#define PIN2        33
-#define PIN3        35
-#define PIN4        37
-#define PIN5        39
-#define PIN6        41
+#define PIN        31  // planet helix with dot in middle or #2
+#define PIN2        33 // T Function thing #3
+#define PIN3        35 // H with arrows #1
+#define PIN4        37  //#4
+#define PIN5        39  // Blood Tube
+#define PIN6        41 // #5
 
-int Canister1 = 30 ;
-int Canister2 = 32 ;
-int Canister3 = 34 ;
-int Canister4 = 36 ;
-int Canister5 = 38 ;
+int Canister1 = 22 ;
+int Canister2 = 24 ;
+int Canister3 = 26 ;
+int Canister4 = 28 ;
+int Canister5 = 30 ;
+int LCanister1S = 0 ;
+int LCanister2S = 0 ;
+int LCanister3S = 0 ;
+int LCanister4S = 0 ;
+int LCanister5S = 0 ;
+
+int Canister1S = 0 ;
+int Canister2S = 0 ;
+int Canister3S = 0 ;
+int Canister4S = 0 ;
+int Canister5S = 0 ;
+
+
 int Mag1 = 40 ;
 int Mag2 = 42 ;
 
@@ -45,13 +56,10 @@ Adafruit_NeoPixel pixels4(NUMPIXELS4, PIN4, NEO_GRB + NEO_KHZ800);
 Adafruit_NeoPixel pixels5(NUMPIXELS5, PIN5, NEO_GRB + NEO_KHZ800);
 Adafruit_NeoPixel pixels6(NUMPIXELS6, PIN6, NEO_GRB + NEO_KHZ800);
 
-#define DELAYVAL 200 // Time (in milliseconds) to pause between pixels
+#define DELAYVAL 10 // Time (in milliseconds) to pause between pixels
 
-// Update these with values suitable for your network.
-byte mac[]    = {  0xDE, 0xED, 0xBA, 0xFE, 0xFE, 0xED };
-IPAddress ip(192, 168, 68, 185);
-IPAddress server(192, 168, 68, 110);
-int scene = 0;
+
+int scene = 1;
 int a = 0;
 int b = 0;
 int c = 0;
@@ -63,44 +71,13 @@ int h = 0;
 int i = 0;
 int j = 0;
 int k = 0;
+int l = 0;
 
 
 
 
 
 
-// Callback function header
-void callback(char* topic, byte* payload, unsigned int length);
-
-EthernetClient ethClient;
-PubSubClient client(server, 1883, callback, ethClient);
-
-// Callback function
-void callback(char* topic, byte* payload, unsigned int length) {
-    
-  //turn the LED ON if the payload is '1' and publish to the MQTT server a confirmation message
-  if(payload[0] == '1'){
-  mode = 1;
-  scene = 0;
-    client.publish("outTopic", mode); }
-    
-  //turn the LED OFF if the payload is '0' and publish to the MQTT server a confirmation message
-  if (payload[0] == '0'){
-   mode = 0;
-   scene = 0;
-   pixels.clear();
-    pixels.show();
-    
-       pixels2.clear();
-    pixels2.show(); 
-      a=1;
-    client.publish("outTopic", "reset");
-    }
-
-
-
-
-} // void callback
 
 
 void setup()
@@ -120,21 +97,50 @@ void setup()
 
        pinMode(Mag1, OUTPUT);
        pinMode(Mag2, OUTPUT);
-
-  
-  Ethernet.begin(mac, ip);
-  if (client.connect("arduinoClient")) {
-    client.publish("outTopic","hello world");
-    client.subscribe("inTopic");
-  }
+       
+Serial.begin(9600);
+Serial.println ("Zombie Antidote online");
+delay (200);
+Serial.println ("aa = start timer");
+delay (200);
+Serial.println ("bb = pause timer");
+delay (200);
+Serial.println ("cc = add 1 minute to timer");
+delay (200);
+Serial.println ("dd == add 5 minutes to timer");
+delay (200);
+Serial.println ("ee == reset timer to 10:00 and stops timer");
+delay (200);
+Serial.println ("ff == sub 1 minute from timer");
+delay (200);
+Serial.println ("gg == sub 5 minutes from timer");
+delay (200);
+Serial.println ("Bomb Ready");
 }
+  
+
+
 
 void loop()
 {    //pixels.clear(); // Set all pixel colors to 'off'
 
   // The first NeoPixel in a strand is #0, second is 1, all the way up
-  // to the count of pixels minus one.
-  if (mode == 1 && scene == 0){
+  handleSerial(); 
+  
+  
+  
+ 
+
+
+
+
+ if (Canister1S == LOW && Canister2S == LOW 
+ && Canister3S == LOW && Canister4S == LOW 
+ && Canister5S == LOW && scene == 1 || mode == 1){
+  
+ mode = 1;
+ 
+ // if (mode == 1 && scene == 0){
   //for(int i=0; i<NUMPIXELS; i++) { // For each pixel...
    for(a=NUMPIXELS; a>0; a--) { // For each pixel...
 
@@ -203,7 +209,7 @@ void loop()
     pixels4.setPixelColor(j, pixels4.Color(0, 0, 45));
     pixels4.setPixelColor(k, pixels4.Color(0, 0, 150));
 
-    pixels5.setPixelColor(a, pixels5.Color(0, 100, 100));
+ /*   pixels5.setPixelColor(a, pixels5.Color(0, 100, 100));
     pixels5.setPixelColor(b, pixels5.Color(0, 75, 75));
     pixels5.setPixelColor(c, pixels5.Color(0, 150, 150));
     pixels5.setPixelColor(d, pixels5.Color(0, 61, 61));
@@ -214,7 +220,7 @@ void loop()
     pixels5.setPixelColor(i, pixels5.Color(0, 100, 100));
     pixels5.setPixelColor(j, pixels5.Color(0, 45, 45));
     pixels5.setPixelColor(k, pixels5.Color(0, 150, 150));
-
+*/
     pixels6.setPixelColor(a, pixels6.Color(100, 0, 0));
     pixels6.setPixelColor(b, pixels6.Color(75, 0, 0));
     pixels6.setPixelColor(c, pixels6.Color(150, 0, 0));
@@ -228,7 +234,7 @@ void loop()
     pixels6.setPixelColor(k, pixels6.Color(150, 0, 0));
 
     
-       client.loop();
+      handleSerial();
         
 
     pixels.show();
@@ -240,8 +246,43 @@ void loop()
 
     delay(DELAYVAL);
     scene = 2;// Pause before next pass through loop
-  }}
+  }}  
   if (mode == 1 && scene == 2){
+
+  for( l=0; l<NUMPIXELS; l++) { // For each pixel...
+
+      b = l+1;  
+      c = l+5;
+      d = l+7;
+      e = l+12;
+      f = l+3;
+      g = l+9;
+      h = l+15;
+      i = l+20;
+      j = l+25;
+      k = l+ 27;
+    
+    pixels5.setPixelColor(a, pixels5.Color(100, 0, 0));
+    pixels5.setPixelColor(b, pixels5.Color(75, 0, 0));
+    pixels5.setPixelColor(c, pixels5.Color(150, 0, 0));
+    pixels5.setPixelColor(d, pixels5.Color(61, 0, 0));
+    pixels5.setPixelColor(e, pixels5.Color(200, 0, 0));
+    pixels5.setPixelColor(f, pixels5.Color(20, 0, 0));
+    pixels5.setPixelColor(g, pixels5.Color(65, 0, 0));
+    pixels5.setPixelColor(h, pixels5.Color(255, 0, 0));
+    pixels5.setPixelColor(i, pixels5.Color(100, 0, 0));
+    pixels5.setPixelColor(j, pixels5.Color(45, 0, 0));
+    pixels5.setPixelColor(k, pixels5.Color(150, 0, 0));
+     pixels5.show();
+       scene = 3;
+        delay(100);
+  }}
+ 
+
+
+
+  if (mode == 1 && scene == 3){
+    
   
    for( a=NUMPIXELS; a>0; a--) { // For each pixel...
   if (b > 0){b --;}else b= random(NUMPIXELS);
@@ -334,8 +375,8 @@ void loop()
     pixels6.setPixelColor(j, pixels6.Color(45, 0, 0));
     pixels6.setPixelColor(k, pixels6.Color(150, 0, 0));
        
-        client.loop();
-
+        handleSerial();
+        
     pixels.show();
     pixels2.show();
     pixels3.show();
@@ -353,5 +394,171 @@ void loop()
     pixels5.show();
     pixels6.show();
     
-  client.loop();
+ handleSerial();
 }
+
+
+
+
+void handleSerial(){
+  while (Serial.available()>0){
+    char incomingCharacter = Serial.read();
+    switch (incomingCharacter) {
+        case 'a':
+        mode = 1;
+   //   gametimer = 1;
+   //   standby = 0;
+      Serial.println ("Countdown Started");
+      break;  
+        
+      case 'b':
+      mode = 0;
+      Serial.println ("Timer Paused");
+      break;      
+           
+      case 'c':
+    //  a = a + 100;
+      Serial.println ("1 minute added");
+      break;
+
+      case 'd':
+    //  a = a + 500;
+      Serial.println ("5 minutes added");
+      break;
+
+      case 'e':
+    //  a = 1500;
+    //  gametimer = 0;
+    //  standby = 1;
+      Serial.println ("Bomb Timer Reset");
+      break;
+
+      case 'f':
+     // a = a - 100;
+      Serial.println ("1 Minute Subtracted");
+      break;
+
+      case 'g':
+     // a = a - 500;
+      Serial.println ("5 Minutes Subtracted");
+      break;
+
+
+
+
+
+      
+      
+// a = start timer
+// b = pause timer
+// c = add 1 minute to timer
+// d == add 5 minutes to timer
+// e == reset timer to 1500 and stops timer
+// f == 1 minute subtracted from timer
+// g == 5 minutes subtracted from timer
+    }
+  }
+  Canister1S = digitalRead(Canister1);
+ 
+    if (Canister1S != LCanister1S) {    
+      if (Canister1S == LOW) {
+             for( a=NUMPIXELS; a>0; a--) { // For each pixel...
+             pixels4.setPixelColor(a, pixels4.Color(0, 0, 200));
+             pixels4.show();}}
+      if (Canister1S == LOW){
+             Serial.println ("Canister1 placed");}    
+      if (Canister1S == HIGH){
+             pixels4.clear();
+             pixels4.show();
+             Serial.println ("Canister1 Removed");
+             a = 0;
+             scene = 1;
+             mode = 0;}
+    }
+ LCanister1S = Canister1S;
+
+
+
+
+  Canister2S = digitalRead(Canister2);
+ 
+    if (Canister2S != LCanister2S) {    
+      if (Canister2S == LOW) {
+             for( a=NUMPIXELS; a>0; a--) { // For each pixel...
+             pixels2.setPixelColor(a, pixels2.Color(0, 0, 200));
+             pixels2.show();}}
+      if (Canister2S == LOW){
+             Serial.println ("Canister2 placed");}    
+      if (Canister2S == HIGH){
+             pixels2.clear();
+             pixels2.show();
+             Serial.println ("Canister2 Removed");
+             a = 0;
+             scene = 1;
+             mode = 0;}
+    }
+ LCanister2S = Canister2S;
+
+  Canister3S = digitalRead(Canister3);
+ 
+    if (Canister3S != LCanister3S) {    
+      if (Canister3S == LOW) {
+             for( a=NUMPIXELS; a>0; a--) { // For each pixel...
+             pixels6.setPixelColor(a, pixels6.Color(0, 0, 200));
+             pixels6.show();}}
+      if (Canister3S == LOW){
+             Serial.println ("Canister3 placed");}    
+      if (Canister3S == HIGH){
+             pixels6.clear();
+             pixels6.show();
+             Serial.println ("Canister3 Removed");
+             a = 0;
+             scene = 1;
+             mode = 0;}
+    }
+ LCanister3S = Canister3S;
+
+   Canister4S = digitalRead(Canister4);
+ 
+    if (Canister4S != LCanister4S) {    
+      if (Canister4S == LOW) {
+             for( a=NUMPIXELS; a>0; a--) { // For each pixel...
+             pixels.setPixelColor(a, pixels.Color(0, 0, 200));
+             pixels.show();}}
+      if (Canister4S == LOW){
+             Serial.println ("Canister4 placed");}    
+      if (Canister4S == HIGH){
+             pixels.clear();
+             pixels.show();
+             Serial.println ("Canister4 Removed");
+             a = 0;
+             scene = 1;
+             mode = 0;}
+    }
+ LCanister4S = Canister4S;
+
+    Canister5S = digitalRead(Canister5);
+ 
+    if (Canister5S != LCanister5S) {    
+      if (Canister5S == LOW) {
+             for( a=NUMPIXELS; a>0; a--) { // For each pixel...
+             pixels3.setPixelColor(a, pixels3.Color(0, 0, 200));
+             pixels3.show();}}
+      if (Canister5S == LOW){
+             Serial.println ("Canister5 placed");}    
+      if (Canister5S == HIGH){
+             pixels3.clear();
+             pixels3.show();
+             Serial.println ("Canister5 Removed");
+             a = 0;
+             scene = 1;
+             mode = 0;}
+    }
+ LCanister5S = Canister5S;
+
+
+  
+}
+
+
+/// END ///
