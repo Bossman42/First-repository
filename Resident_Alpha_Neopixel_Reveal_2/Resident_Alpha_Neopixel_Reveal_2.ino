@@ -43,11 +43,19 @@ int Canister3S = 0 ;
 int Canister4S = 0 ;
 int Canister5S = 0 ;
 
+int canister1placed = 0;
+int canister2placed = 0;
+int canister3placed = 0;
+int canister4placed = 0;
+int canister5placed = 0;
 
-int Mag1 = 40 ;
-int Mag2 = 42 ;
 
-int     mode     = 0;
+
+int Mag1 = 38 ;
+int Mag2 = 40 ;
+
+int mode = 0 ;
+int breakout = 0;
 
 Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 Adafruit_NeoPixel pixels2(NUMPIXELS2, PIN2, NEO_GRB + NEO_KHZ800);
@@ -97,6 +105,11 @@ void setup()
 
        pinMode(Mag1, OUTPUT);
        pinMode(Mag2, OUTPUT);
+
+           digitalWrite (Mag1,LOW);
+           digitalWrite (Mag2,LOW);
+           Serial.println ("Mag 1 ON");
+           Serial.println ("Mag 2 ON");
        
 Serial.begin(9600);
 Serial.println ("Zombie Antidote online");
@@ -127,18 +140,14 @@ void loop()
   // The first NeoPixel in a strand is #0, second is 1, all the way up
   handleSerial(); 
   
-  
-  
+
  
-
-
-
 
  if (Canister1S == LOW && Canister2S == LOW 
  && Canister3S == LOW && Canister4S == LOW 
  && Canister5S == LOW && scene == 1 || mode == 1){
   
- mode = 1;
+ 
  
  // if (mode == 1 && scene == 0){
   //for(int i=0; i<NUMPIXELS; i++) { // For each pixel...
@@ -154,12 +163,9 @@ void loop()
       i = a+20;
       j = a+25;
       k = a+ 27;
-
-
-     
      
     // pixels.Color() takes RGB values, from 0,0,0 up to 255,255,255
-    // Here we're using a moderately bright green color:
+
     pixels.setPixelColor(a, pixels.Color(0, 100, 0));
     pixels.setPixelColor(b, pixels.Color(0, 20, 0));
     pixels.setPixelColor(c, pixels.Color(0, 150, 0));
@@ -172,71 +178,60 @@ void loop()
     pixels.setPixelColor(j, pixels.Color(0, 23, 0));
     pixels.setPixelColor(k, pixels.Color(0, 150, 0));
 
+    pixels2.setPixelColor(a, pixels2.Color(0, 100, 0));
+    pixels2.setPixelColor(b, pixels2.Color(0, 20, 0));
+    pixels2.setPixelColor(c, pixels2.Color(0, 150, 0));
+    pixels2.setPixelColor(d, pixels2.Color(0, 61, 0));
+    pixels2.setPixelColor(e, pixels2.Color(0, 200, 0));
+    pixels2.setPixelColor(f, pixels2.Color(0, 20, 0));
+    pixels2.setPixelColor(g, pixels2.Color(0, 45, 0));
+    pixels2.setPixelColor(h, pixels2.Color(0, 255, 0));
+    pixels2.setPixelColor(i, pixels2.Color(0, 100, 0));
+    pixels2.setPixelColor(j, pixels2.Color(0, 23, 0));
+    pixels2.setPixelColor(k, pixels2.Color(0, 150, 0));
 
-    pixels2.setPixelColor(a, pixels2.Color(100, 0, 100));
-    pixels2.setPixelColor(b, pixels2.Color(75, 0, 75));
-    pixels2.setPixelColor(c, pixels2.Color(150, 0, 150));
-    pixels2.setPixelColor(d, pixels2.Color(61, 0, 61));
-    pixels2.setPixelColor(e, pixels2.Color(200, 0, 200));
-    pixels2.setPixelColor(f, pixels2.Color(20, 0, 20));
-    pixels2.setPixelColor(g, pixels2.Color(65, 0, 65));
-    pixels2.setPixelColor(h, pixels2.Color(255, 0, 255));
-    pixels2.setPixelColor(i, pixels2.Color(100, 0, 100));
-    pixels2.setPixelColor(j, pixels2.Color(45, 0, 45));
-    pixels2.setPixelColor(k, pixels2.Color(150, 0, 150));
 
-    pixels3.setPixelColor(a, pixels3.Color(100, 100, 0));
-    pixels3.setPixelColor(b, pixels3.Color(75, 75, 0));
-    pixels3.setPixelColor(c, pixels3.Color(150, 150, 0));
-    pixels3.setPixelColor(d, pixels3.Color(61, 61, 0));
-    pixels3.setPixelColor(e, pixels3.Color(200, 200, 0));
-    pixels3.setPixelColor(f, pixels3.Color(20, 20, 0));
-    pixels3.setPixelColor(g, pixels3.Color(65, 65, 0));
-    pixels3.setPixelColor(h, pixels3.Color(255, 255, 0));
-    pixels3.setPixelColor(i, pixels3.Color(100, 100, 0));
-    pixels3.setPixelColor(j, pixels3.Color(45, 45, 0));
-    pixels3.setPixelColor(k, pixels3.Color(150, 150, 0));
+    pixels3.setPixelColor(a, pixels3.Color(0, 100, 0));
+    pixels3.setPixelColor(b, pixels3.Color(0, 20, 0));
+    pixels3.setPixelColor(c, pixels3.Color(0, 150, 0));
+    pixels3.setPixelColor(d, pixels3.Color(0, 61, 0));
+    pixels3.setPixelColor(e, pixels3.Color(0, 200, 0));
+    pixels3.setPixelColor(f, pixels3.Color(0, 20, 0));
+    pixels3.setPixelColor(g, pixels3.Color(0, 45, 0));
+    pixels3.setPixelColor(h, pixels3.Color(0, 255, 0));
+    pixels3.setPixelColor(i, pixels3.Color(0, 100, 0));
+    pixels3.setPixelColor(j, pixels3.Color(0, 23, 0));
+    pixels3.setPixelColor(k, pixels3.Color(0, 150, 0));
 
-    pixels4.setPixelColor(a, pixels4.Color(0, 0, 100));
-    pixels4.setPixelColor(b, pixels4.Color(0, 0, 75));
-    pixels4.setPixelColor(c, pixels4.Color(0, 0, 150));
-    pixels4.setPixelColor(d, pixels4.Color(0, 0, 61));
-    pixels4.setPixelColor(e, pixels4.Color(0, 0, 200));
-    pixels4.setPixelColor(f, pixels4.Color(0, 0, 20));
-    pixels4.setPixelColor(g, pixels4.Color(0, 0, 65));
-    pixels4.setPixelColor(h, pixels4.Color(0, 0, 255));
-    pixels4.setPixelColor(i, pixels4.Color(0, 0, 100));
-    pixels4.setPixelColor(j, pixels4.Color(0, 0, 45));
-    pixels4.setPixelColor(k, pixels4.Color(0, 0, 150));
+    pixels4.setPixelColor(a, pixels4.Color(0, 100, 0));
+    pixels4.setPixelColor(b, pixels4.Color(0, 20, 0));
+    pixels4.setPixelColor(c, pixels4.Color(0, 150, 0));
+    pixels4.setPixelColor(d, pixels4.Color(0, 61, 0));
+    pixels4.setPixelColor(e, pixels4.Color(0, 200, 0));
+    pixels4.setPixelColor(f, pixels4.Color(0, 20, 0));
+    pixels4.setPixelColor(g, pixels4.Color(0, 45, 0));
+    pixels4.setPixelColor(h, pixels4.Color(0, 255, 0));
+    pixels4.setPixelColor(i, pixels4.Color(0, 100, 0));
+    pixels4.setPixelColor(j, pixels4.Color(0, 23, 0));
+    pixels4.setPixelColor(k, pixels4.Color(0, 150, 0));
 
- /*   pixels5.setPixelColor(a, pixels5.Color(0, 100, 100));
-    pixels5.setPixelColor(b, pixels5.Color(0, 75, 75));
-    pixels5.setPixelColor(c, pixels5.Color(0, 150, 150));
-    pixels5.setPixelColor(d, pixels5.Color(0, 61, 61));
-    pixels5.setPixelColor(e, pixels5.Color(0, 200, 200));
-    pixels5.setPixelColor(f, pixels5.Color(0, 20, 20));
-    pixels5.setPixelColor(g, pixels5.Color(0, 65, 65));
-    pixels5.setPixelColor(h, pixels5.Color(0, 255, 255));
-    pixels5.setPixelColor(i, pixels5.Color(0, 100, 100));
-    pixels5.setPixelColor(j, pixels5.Color(0, 45, 45));
-    pixels5.setPixelColor(k, pixels5.Color(0, 150, 150));
-*/
-    pixels6.setPixelColor(a, pixels6.Color(100, 0, 0));
-    pixels6.setPixelColor(b, pixels6.Color(75, 0, 0));
-    pixels6.setPixelColor(c, pixels6.Color(150, 0, 0));
-    pixels6.setPixelColor(d, pixels6.Color(61, 0, 0));
-    pixels6.setPixelColor(e, pixels6.Color(200, 0, 0));
-    pixels6.setPixelColor(f, pixels6.Color(20, 0, 0));
-    pixels6.setPixelColor(g, pixels6.Color(65, 0, 0));
-    pixels6.setPixelColor(h, pixels6.Color(255, 0, 0));
-    pixels6.setPixelColor(i, pixels6.Color(100, 0, 0));
-    pixels6.setPixelColor(j, pixels6.Color(45, 0, 0));
-    pixels6.setPixelColor(k, pixels6.Color(150, 0, 0));
-
+    pixels6.setPixelColor(a, pixels6.Color(0, 100, 0));
+    pixels6.setPixelColor(b, pixels6.Color(0, 20, 0));
+    pixels6.setPixelColor(c, pixels6.Color(0, 150, 0));
+    pixels6.setPixelColor(d, pixels6.Color(0, 61, 0));
+    pixels6.setPixelColor(e, pixels6.Color(0, 200, 0));
+    pixels6.setPixelColor(f, pixels6.Color(0, 20, 0));
+    pixels6.setPixelColor(g, pixels6.Color(0, 45, 0));
+    pixels6.setPixelColor(h, pixels6.Color(0, 255, 0));
+    pixels6.setPixelColor(i, pixels6.Color(0, 100, 0));
+    pixels6.setPixelColor(j, pixels6.Color(0, 23, 0));
+    pixels6.setPixelColor(k, pixels6.Color(0, 150, 0));
     
       handleSerial();
+      if (breakout == 1){
+        break;
+      }
         
-
     pixels.show();
     pixels2.show();
     pixels3.show();
@@ -247,9 +242,11 @@ void loop()
     delay(DELAYVAL);
     scene = 2;// Pause before next pass through loop
   }}  
-  if (mode == 1 && scene == 2){
+  if (Canister1S == LOW && Canister2S == LOW 
+ && Canister3S == LOW && Canister4S == LOW 
+ && Canister5S == LOW && scene == 2 || mode == 1){
 
-  for( l=0; l<NUMPIXELS; l++) { // For each pixel...
+  for( l=0; l<NUMPIXELS5; l++) { // For each pixel...
 
       b = l+1;  
       c = l+5;
@@ -273,15 +270,25 @@ void loop()
     pixels5.setPixelColor(i, pixels5.Color(100, 0, 0));
     pixels5.setPixelColor(j, pixels5.Color(45, 0, 0));
     pixels5.setPixelColor(k, pixels5.Color(150, 0, 0));
+          handleSerial();
+      if (breakout == 1){
+        break;
+      }
      pixels5.show();
        scene = 3;
         delay(100);
-  }}
+  }
+  
+     digitalWrite (Mag1,HIGH);
+     Serial.println ("They got the Antidote!");
+     Serial.println ("Mag 1 OFF");}
  
 
 
 
-  if (mode == 1 && scene == 3){
+ if (Canister1S == LOW && Canister2S == LOW 
+ && Canister3S == LOW && Canister4S == LOW 
+ && Canister5S == LOW && scene == 3 || mode == 1){
     
   
    for( a=NUMPIXELS; a>0; a--) { // For each pixel...
@@ -295,12 +302,9 @@ void loop()
   if (i > 0){i --;}else i= random(NUMPIXELS);
   if (j > 0){j --;}else j= random(NUMPIXELS);
   if (k > 0){k --;}else k= random(NUMPIXELS);
-
-
-     
-     
+ 
     // pixels.Color() takes RGB values, from 0,0,0 up to 255,255,255
-    // Here we're using a moderately bright green color:
+
     pixels.setPixelColor(a, pixels.Color(0, 100, 0));
     pixels.setPixelColor(b, pixels.Color(0, 20, 0));
     pixels.setPixelColor(c, pixels.Color(0, 150, 0));
@@ -313,70 +317,72 @@ void loop()
     pixels.setPixelColor(j, pixels.Color(0, 23, 0));
     pixels.setPixelColor(k, pixels.Color(0, 150, 0));
 
+    pixels2.setPixelColor(a, pixels2.Color(0, 100, 0));
+    pixels2.setPixelColor(b, pixels2.Color(0, 20, 0));
+    pixels2.setPixelColor(c, pixels2.Color(0, 150, 0));
+    pixels2.setPixelColor(d, pixels2.Color(0, 61, 0));
+    pixels2.setPixelColor(e, pixels2.Color(0, 200, 0));
+    pixels2.setPixelColor(f, pixels2.Color(0, 20, 0));
+    pixels2.setPixelColor(g, pixels2.Color(0, 45, 0));
+    pixels2.setPixelColor(h, pixels2.Color(0, 255, 0));
+    pixels2.setPixelColor(i, pixels2.Color(0, 100, 0));
+    pixels2.setPixelColor(j, pixels2.Color(0, 23, 0));
+    pixels2.setPixelColor(k, pixels2.Color(0, 150, 0));
 
 
-    pixels2.setPixelColor(a, pixels2.Color(100, 0, 100));
-    pixels2.setPixelColor(b, pixels2.Color(75, 0, 75));
-    pixels2.setPixelColor(c, pixels2.Color(150, 0, 150));
-    pixels2.setPixelColor(d, pixels2.Color(61, 0, 61));
-    pixels2.setPixelColor(e, pixels2.Color(200, 0, 200));
-    pixels2.setPixelColor(f, pixels2.Color(20, 0, 20));
-    pixels2.setPixelColor(g, pixels2.Color(65, 0, 65));
-    pixels2.setPixelColor(h, pixels2.Color(255, 0, 255));
-    pixels2.setPixelColor(i, pixels2.Color(100, 0, 100));
-    pixels2.setPixelColor(j, pixels2.Color(45, 0, 45));
-    pixels2.setPixelColor(k, pixels2.Color(150, 0, 150));
+    pixels3.setPixelColor(a, pixels3.Color(0, 100, 0));
+    pixels3.setPixelColor(b, pixels3.Color(0, 20, 0));
+    pixels3.setPixelColor(c, pixels3.Color(0, 150, 0));
+    pixels3.setPixelColor(d, pixels3.Color(0, 61, 0));
+    pixels3.setPixelColor(e, pixels3.Color(0, 200, 0));
+    pixels3.setPixelColor(f, pixels3.Color(0, 20, 0));
+    pixels3.setPixelColor(g, pixels3.Color(0, 45, 0));
+    pixels3.setPixelColor(h, pixels3.Color(0, 255, 0));
+    pixels3.setPixelColor(i, pixels3.Color(0, 100, 0));
+    pixels3.setPixelColor(j, pixels3.Color(0, 23, 0));
+    pixels3.setPixelColor(k, pixels3.Color(0, 150, 0));
 
-    pixels3.setPixelColor(a, pixels3.Color(100, 100, 0));
-    pixels3.setPixelColor(b, pixels3.Color(75, 75, 0));
-    pixels3.setPixelColor(c, pixels3.Color(150, 150, 0));
-    pixels3.setPixelColor(d, pixels3.Color(61, 61, 0));
-    pixels3.setPixelColor(e, pixels3.Color(200, 200, 0));
-    pixels3.setPixelColor(f, pixels3.Color(20, 20, 0));
-    pixels3.setPixelColor(g, pixels3.Color(65, 65, 0));
-    pixels3.setPixelColor(h, pixels3.Color(255, 255, 0));
-    pixels3.setPixelColor(i, pixels3.Color(100, 100, 0));
-    pixels3.setPixelColor(j, pixels3.Color(45, 45, 0));
-    pixels3.setPixelColor(k, pixels3.Color(150, 150, 0));
+    pixels4.setPixelColor(a, pixels4.Color(0, 100, 0));
+    pixels4.setPixelColor(b, pixels4.Color(0, 20, 0));
+    pixels4.setPixelColor(c, pixels4.Color(0, 150, 0));
+    pixels4.setPixelColor(d, pixels4.Color(0, 61, 0));
+    pixels4.setPixelColor(e, pixels4.Color(0, 200, 0));
+    pixels4.setPixelColor(f, pixels4.Color(0, 20, 0));
+    pixels4.setPixelColor(g, pixels4.Color(0, 45, 0));
+    pixels4.setPixelColor(h, pixels4.Color(0, 255, 0));
+    pixels4.setPixelColor(i, pixels4.Color(0, 100, 0));
+    pixels4.setPixelColor(j, pixels4.Color(0, 23, 0));
+    pixels4.setPixelColor(k, pixels4.Color(0, 150, 0));
 
-    pixels4.setPixelColor(a, pixels4.Color(0, 0, 100));
-    pixels4.setPixelColor(b, pixels4.Color(0, 0, 75));
-    pixels4.setPixelColor(c, pixels4.Color(0, 0, 150));
-    pixels4.setPixelColor(d, pixels4.Color(0, 0, 61));
-    pixels4.setPixelColor(e, pixels4.Color(0, 0, 200));
-    pixels4.setPixelColor(f, pixels4.Color(0, 0, 20));
-    pixels4.setPixelColor(g, pixels4.Color(0, 0, 65));
-    pixels4.setPixelColor(h, pixels4.Color(0, 0, 255));
-    pixels4.setPixelColor(i, pixels4.Color(0, 0, 100));
-    pixels4.setPixelColor(j, pixels4.Color(0, 0, 45));
-    pixels4.setPixelColor(k, pixels4.Color(0, 0, 150));
+    pixels6.setPixelColor(a, pixels6.Color(0, 100, 0));
+    pixels6.setPixelColor(b, pixels6.Color(0, 20, 0));
+    pixels6.setPixelColor(c, pixels6.Color(0, 150, 0));
+    pixels6.setPixelColor(d, pixels6.Color(0, 61, 0));
+    pixels6.setPixelColor(e, pixels6.Color(0, 200, 0));
+    pixels6.setPixelColor(f, pixels6.Color(0, 20, 0));
+    pixels6.setPixelColor(g, pixels6.Color(0, 45, 0));
+    pixels6.setPixelColor(h, pixels6.Color(0, 255, 0));
+    pixels6.setPixelColor(i, pixels6.Color(0, 100, 0));
+    pixels6.setPixelColor(j, pixels6.Color(0, 23, 0));
+    pixels6.setPixelColor(k, pixels6.Color(0, 150, 0));
 
-    pixels5.setPixelColor(a, pixels5.Color(0, 100, 100));
-    pixels5.setPixelColor(b, pixels5.Color(0, 75, 75));
-    pixels5.setPixelColor(c, pixels5.Color(0, 150, 150));
-    pixels5.setPixelColor(d, pixels5.Color(0, 61, 61));
-    pixels5.setPixelColor(e, pixels5.Color(0, 200, 200));
-    pixels5.setPixelColor(f, pixels5.Color(0, 20, 20));
-    pixels5.setPixelColor(g, pixels5.Color(0, 65, 65));
-    pixels5.setPixelColor(h, pixels5.Color(0, 255, 255));
-    pixels5.setPixelColor(i, pixels5.Color(0, 100, 100));
-    pixels5.setPixelColor(j, pixels5.Color(0, 45, 45));
-    pixels5.setPixelColor(k, pixels5.Color(0, 150, 150));
+    pixels5.setPixelColor(a, pixels5.Color(100, 0, 0));
+    pixels5.setPixelColor(b, pixels5.Color(75, 0, 0));
+    pixels5.setPixelColor(c, pixels5.Color(150, 0, 0));
+    pixels5.setPixelColor(d, pixels5.Color(61, 0, 0));
+    pixels5.setPixelColor(e, pixels5.Color(200, 0, 0));
+    pixels5.setPixelColor(f, pixels5.Color(20, 0, 0));
+    pixels5.setPixelColor(g, pixels5.Color(65, 0, 0));
+    pixels5.setPixelColor(h, pixels5.Color(255, 0, 0));
+    pixels5.setPixelColor(i, pixels5.Color(100, 0, 0));
+    pixels5.setPixelColor(j, pixels5.Color(45, 0, 0));
+    pixels5.setPixelColor(k, pixels5.Color(150, 0, 0));
 
-    pixels6.setPixelColor(a, pixels6.Color(100, 0, 0));
-    pixels6.setPixelColor(b, pixels6.Color(75, 0, 0));
-    pixels6.setPixelColor(c, pixels6.Color(150, 0, 0));
-    pixels6.setPixelColor(d, pixels6.Color(61, 0, 0));
-    pixels6.setPixelColor(e, pixels6.Color(200, 0, 0));
-    pixels6.setPixelColor(f, pixels6.Color(20, 0, 0));
-    pixels6.setPixelColor(g, pixels6.Color(65, 0, 0));
-    pixels6.setPixelColor(h, pixels6.Color(255, 0, 0));
-    pixels6.setPixelColor(i, pixels6.Color(100, 0, 0));
-    pixels6.setPixelColor(j, pixels6.Color(45, 0, 0));
-    pixels6.setPixelColor(k, pixels6.Color(150, 0, 0));
-       
-        handleSerial();
-        
+      handleSerial();
+      if (breakout == 1){
+        break;
+      }
+      
     pixels.show();
     pixels2.show();
     pixels3.show();
@@ -385,7 +391,7 @@ void loop()
     pixels6.show();
 
     delay(DELAYVAL);// Pause before next pass through loop
-  }}
+  }  }
    
     pixels.show();
     pixels2.show();
@@ -406,41 +412,72 @@ void handleSerial(){
     switch (incomingCharacter) {
         case 'a':
         mode = 1;
+        breakout = 0;
    //   gametimer = 1;
    //   standby = 0;
-      Serial.println ("Countdown Started");
+      Serial.println ("Mode 1");
       break;  
         
       case 'b':
       mode = 0;
-      Serial.println ("Timer Paused");
+                   pixels.clear();
+             pixels2.clear(); 
+             pixels3.clear();
+             pixels4.clear();
+             pixels5.clear();
+             pixels6.clear();
+     
+             pixels.show();
+             pixels2.show();
+             pixels3.show();
+             pixels4.show();
+             pixels5.show();
+             pixels6.show();
+             breakout = 1;
+             digitalWrite (Mag1,LOW);
+             digitalWrite (Mag2,LOW);
+      Serial.println ("Mode 0");
       break;      
            
       case 'c':
-    //  a = a + 100;
-      Serial.println ("1 minute added");
+    // Mag 1 on
+    digitalWrite (Mag1,LOW);
+      Serial.println ("Mag 1 ON");
       break;
 
       case 'd':
-    //  a = a + 500;
-      Serial.println ("5 minutes added");
+    digitalWrite (Mag1,HIGH);
+      Serial.println ("Mag 1 OFF");
       break;
 
       case 'e':
-    //  a = 1500;
-    //  gametimer = 0;
-    //  standby = 1;
-      Serial.println ("Bomb Timer Reset");
+    digitalWrite (Mag2,LOW);
+      Serial.println ("Mag 2 ON");
       break;
 
       case 'f':
-     // a = a - 100;
-      Serial.println ("1 Minute Subtracted");
+    digitalWrite (Mag2,HIGH);
+      Serial.println ("Mag 2 OFF");
       break;
 
       case 'g':
-     // a = a - 500;
-      Serial.println ("5 Minutes Subtracted");
+     // status
+      Serial.print ("Scene    ");
+      Serial.println (scene);
+      Serial.print ("Canister 1 State    ");
+      Serial.println (Canister1S);
+      Serial.print ("Canister 2 State    ");
+      Serial.println (Canister2S);
+      Serial.print ("Canister 3 State    ");
+      Serial.println (Canister3S);
+      Serial.print ("Canister 4 State    ");
+      Serial.println (Canister4S);
+      Serial.print ("Canister 5 State    ");
+      Serial.println (Canister5S);
+      Serial.print ("Mode     ");
+      Serial.println (mode);
+
+
       break;
 
 
@@ -459,28 +496,35 @@ void handleSerial(){
     }
   }
   Canister1S = digitalRead(Canister1);
+  Canister2S = digitalRead(Canister2);
+  Canister3S = digitalRead(Canister3);
+  Canister4S = digitalRead(Canister4);
+  Canister5S = digitalRead(Canister5);
+  
+
  
+  
     if (Canister1S != LCanister1S) {    
       if (Canister1S == LOW) {
              for( a=NUMPIXELS; a>0; a--) { // For each pixel...
              pixels4.setPixelColor(a, pixels4.Color(0, 0, 200));
              pixels4.show();}}
       if (Canister1S == LOW){
+             breakout = 0;
              Serial.println ("Canister1 placed");}    
       if (Canister1S == HIGH){
              pixels4.clear();
              pixels4.show();
+             breakout = 1;
              Serial.println ("Canister1 Removed");
-             a = 0;
-             scene = 1;
-             mode = 0;}
+             scene = 1;}
     }
  LCanister1S = Canister1S;
 
 
 
 
-  Canister2S = digitalRead(Canister2);
+
  
     if (Canister2S != LCanister2S) {    
       if (Canister2S == LOW) {
@@ -488,18 +532,17 @@ void handleSerial(){
              pixels2.setPixelColor(a, pixels2.Color(0, 0, 200));
              pixels2.show();}}
       if (Canister2S == LOW){
+             breakout = 0;
              Serial.println ("Canister2 placed");}    
       if (Canister2S == HIGH){
              pixels2.clear();
              pixels2.show();
+             breakout = 1;
              Serial.println ("Canister2 Removed");
-             a = 0;
-             scene = 1;
-             mode = 0;}
+             scene = 1;}
     }
  LCanister2S = Canister2S;
 
-  Canister3S = digitalRead(Canister3);
  
     if (Canister3S != LCanister3S) {    
       if (Canister3S == LOW) {
@@ -507,18 +550,18 @@ void handleSerial(){
              pixels6.setPixelColor(a, pixels6.Color(0, 0, 200));
              pixels6.show();}}
       if (Canister3S == LOW){
+             breakout = 0;
              Serial.println ("Canister3 placed");}    
       if (Canister3S == HIGH){
              pixels6.clear();
              pixels6.show();
+             breakout = 1;
              Serial.println ("Canister3 Removed");
-             a = 0;
-             scene = 1;
-             mode = 0;}
+             scene = 1;}
     }
  LCanister3S = Canister3S;
 
-   Canister4S = digitalRead(Canister4);
+
  
     if (Canister4S != LCanister4S) {    
       if (Canister4S == LOW) {
@@ -526,37 +569,64 @@ void handleSerial(){
              pixels.setPixelColor(a, pixels.Color(0, 0, 200));
              pixels.show();}}
       if (Canister4S == LOW){
+             breakout = 0;
              Serial.println ("Canister4 placed");}    
       if (Canister4S == HIGH){
              pixels.clear();
              pixels.show();
+             breakout = 1;
              Serial.println ("Canister4 Removed");
-             a = 0;
-             scene = 1;
-             mode = 0;}
+             scene = 1;}
     }
  LCanister4S = Canister4S;
 
-    Canister5S = digitalRead(Canister5);
+
+
+    
+    
+
  
-    if (Canister5S != LCanister5S) {    
+    if (Canister5S != LCanister5S && mode == 0) {    
       if (Canister5S == LOW) {
              for( a=NUMPIXELS; a>0; a--) { // For each pixel...
              pixels3.setPixelColor(a, pixels3.Color(0, 0, 200));
              pixels3.show();}}
       if (Canister5S == LOW){
+             breakout = 0;
+             scene = 1;
              Serial.println ("Canister5 placed");}    
       if (Canister5S == HIGH){
-             pixels3.clear();
-             pixels3.show();
+            pixels3.clear(); 
+            pixels3.show();
+             breakout = 1;
              Serial.println ("Canister5 Removed");
-             a = 0;
-             scene = 1;
-             mode = 0;}
+             scene = 1;}
     }
  LCanister5S = Canister5S;
 
-
+ 
+//// For resetting puzzle after all canisters are removed
+/* if (Canister1S == 1 && Canister2S == 1 
+ && Canister3S == 1 && Canister4S == 1
+ && Canister5S == 1 && scene >=2 && mode == 0){
+             pixels.clear();
+             pixels2.clear(); 
+             pixels3.clear();
+             pixels4.clear();
+             pixels5.clear();
+             pixels6.clear();
+     
+             pixels.show();
+             pixels2.show();
+             pixels3.show();
+             pixels4.show();
+             pixels5.show();
+             pixels6.show();
+             breakout = 0;
+             scene = 1;
+             Serial.println ("Game is Reset");
+ }
+*/
   
 }
 
